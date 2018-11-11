@@ -1,0 +1,35 @@
+class Program
+    {
+    	static void Main(string[] args)
+        {
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7000);
+            s.Connect(ep);
+
+            string key = string.Empty;
+            byte[] buffer = new byte[1024];
+            Console.WriteLine("connected...enter Q to exit");
+
+            while((key = Console.ReadLine()) != "Q")
+            {
+                try
+                {
+                    byte[] msg = Encoding.UTF8.GetBytes(key);
+                    s.Send(msg, SocketFlags.None);
+
+                    int nbytes = s.Receive(buffer);
+                    Console.WriteLine(Encoding.UTF8.GetString(buffer, 0, nbytes));
+                }
+                catch(SocketException e)
+                {
+                    Console.WriteLine(e.Message + e.ErrorCode);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+      
+            s.Close();
+        }
+    }
